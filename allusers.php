@@ -1,7 +1,12 @@
 <?php 
+session_start();
+
+if(!isset($_SESSION['login_user'])){
+    header("location:sign-in.php");
+}
 require_once 'db.php';
 
-$query = "SELECT id, lname,fname,email,status,photo FROM users ORDER BY id DESC";
+$query = "SELECT id, lname, fname,email,status,photo FROM users ORDER BY id DESC";
 $result = mysqli_query($conn, $query);
 
 if(mysqli_num_rows($result) > 0){
@@ -9,6 +14,7 @@ if(mysqli_num_rows($result) > 0){
 }
 
 require_once 'inc/header.php';
+
 ?>
 
 
@@ -29,7 +35,7 @@ require_once 'inc/header.php';
                     </tr>
 
                     <?php 
-                    foreach($users as $user){
+                    foreach($users as $key => $user){
                     ?>
                     <tr>
                         <td><?= $user['id'];?></td>
@@ -39,11 +45,19 @@ require_once 'inc/header.php';
                         <td><?= $user['fname'];?></td>
                         <td><?= $user['lname'];?></td>
                         <td><?= $user['email'];?></td>
-                        <td><?= $user['status'];?></td>
                         <td>
-                            <a href="#" class="btn btn-sm btn-primary">View</a>
+                            <span class="badge  <?php echo  $user['status'] == 1 ? "bg-success" : "bg-warning" ?>">
+                                <?php echo $user['status'] == 1 ? "Active" : "Deactive" ?>
+                            </span>
+                        </td>
+                        <td>
+
+                            <a href="view.php?id=<?= $user['id'];?>" class="btn btn-sm btn-primary">View</a>
                             <a href="edit.php?id=<?= $user['id'];?>" class="btn btn-sm btn-info">Edit</a>
-                            <a href="#" class="btn btn-sm btn-danger">Delete</a>
+                            <a href="delete.php?id=<?= $user['id'];?>" class="btn btn-sm btn-danger">Delete</a>
+                            <a href="status.php?id=<?= $user['id'];?>" class="btn btn-sm <?php echo  $user['status'] == 1 ? "bg-warning" : "bg-success" ?>">
+                                <?php echo $user['status'] == 1 ? "Deactive" : "Active" ?>
+                            </a>
                         </td>
                     </tr>
                     <?php
